@@ -1,10 +1,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { DEFAULT_LOGIN_REDIRECTION, apiAuthPrefix, authRoutes, publicRoutes } from "@/routes"
-import { getToken } from "next-auth/jwt"
+import { getToken, GetTokenParams } from "next-auth/jwt"
 
 export async function middleware(req: NextRequest) {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const tokenParams: Partial<GetTokenParams> = {
+        req,
+        secret: process.env.NEXTAUTH_SECRET,
+    };
+
+    if (process.env.NEXTAUTH_SALT) {
+        tokenParams.salt = process.env.NEXTAUTH_SALT;
+    }
+
+    const token = await getToken(tokenParams as GetTokenParams);
     const isLoggedIn = !!token;
 
     const { pathname } = req.nextUrl;

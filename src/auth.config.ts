@@ -1,13 +1,12 @@
-import type { NextAuthOptions } from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import GoogleProvider from "next-auth/providers/google";
-import EmailProvider from "next-auth/providers/email";
-import { prisma } from "./server/db";
-import { Role } from "@prisma/client";
+import type { NextAuthConfig } from "next-auth";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/server/db";
+import EmailProvider from "next-auth/providers/nodemailer";
 
-export const authOptions: NextAuthOptions = {
-    adapter: PrismaAdapter(prisma) as any,
+export default {
     session: { strategy: "jwt" },
+    adapter: PrismaAdapter(prisma) as any,
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID ?? "",
@@ -26,22 +25,17 @@ export const authOptions: NextAuthOptions = {
         }),
         EmailProvider({
             server: process.env.EMAIL_SERVER,
-            from: process.env.EMAIL_FROM || "",
+            from: process.env.EMAIL_FROM,
             maxAge: 24 * 60 * 60,
-            async sendVerificationRequest({ identifier: email, url }) {
+            sendVerificationRequest: async ({ identifier: email, url }) => {
                 try {
                     const response = await fetch(process.env.EMAIL_HTTP_ADDRESS || "", {
-                        method: "POST",
-                        headers: {
-                            Authorization: `Bearer ${process.env.MAILERSEND_API_KEY}`,
-                            "Content-Type": "application/json",
-                        },
                         body: JSON.stringify({
                             to: [{ email: email }],
                             from: { email: process.env.EMAIL_FROM },
-                            subject: "Connexion à Ménélas",
+                            subject: "Sign in to Your page",
                             html: `
-                <!DOCTYPE html>
+                       <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -110,51 +104,24 @@ export const authOptions: NextAuthOptions = {
     </div>
 </body>
 </html>
-                `,
+                    `,
                         }),
-                    });
+                        headers: {
+                            Authorization: `Bearer ${process.env.MAILERSEND_API_KEY}`,
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                    })
 
                     if (!response.ok) {
-                        const errorData = await response.json();
-                        console.error("Error sending login email:", response.status, response.statusText, errorData);
-                        throw new Error(JSON.stringify(errorData));
+                        console.error("error sending login email:", response.status, response.statusText);
+                        const { errors } = await response.json()
+                        throw new Error(JSON.stringify(errors))
                     }
                 } catch (error) {
                     console.error("Error sending auth email:", error);
-                    throw new Error("Failed to send verification email: " + (error as Error).message);
                 }
-            },
+            }
         }),
     ],
-    pages: {
-        signIn: "/login",
-        verifyRequest: "/login/verifier-mails",
-        error: "/login/erreur",
-    },
-    callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id;
-                token.email = user.email;
-                token.name = user.name;
-                token.firstName = user.first_name;
-                token.lastName = user.last_name;
-                token.role = user.role;
-                token.image = user.image;
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            if (session.user) {
-                session.user.id = token.id as string;
-                session.user.email = token.email as string;
-                session.user.name = token.name as string;
-                session.user.first_name = token.firstName as string;
-                session.user.last_name = token.lastName as string;
-                session.user.role = token.role as Role;
-                session.user.image = token.image as string | undefined;
-            }
-            return session;
-        },
-    },
-};
+} satisfies NextAuthConfig

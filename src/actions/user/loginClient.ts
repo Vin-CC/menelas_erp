@@ -3,7 +3,7 @@ import { signIn } from "next-auth/react";
 
 export const clientLogin = async (email: string) => {
     try {
-        const result = await signIn("email", {
+        const result = await signIn("nodemailer", {
             email,
             redirect: false,
             callbackUrl: "/login/verifier-mails"
