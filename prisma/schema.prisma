@@ -54,8 +54,8 @@ enum PaymentType {
 }
 
 enum CollectionType {
-    NOT_ENTRUSTED
-    ENTRUSTED
+  NOT_ENTRUSTED
+  ENTRUSTED
 }
 
 enum DamageState {
@@ -84,70 +84,70 @@ enum Fractioning {
 
 // Necessary for Next auth
 model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? // @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refresh_token_expires_in Int?
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? // @db.Text
+  access_token             String? // @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? // @db.Text
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token_expires_in Int?
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  role          Role      @default(USER)
-  last_name     String
-  first_name    String
-  managed_policyholders     Policyholder[] @relation("PolicyholderManager")
-  created_policyholders     Policyholder[] @relation("PolicyholderCreator")
-  updated_policyholders     Policyholder[] @relation("PolicyholderEditor")
+  id                         String             @id @default(cuid())
+  name                       String?
+  email                      String?            @unique
+  emailVerified              DateTime?
+  image                      String?
+  accounts                   Account[]
+  sessions                   Session[]
+  role                       Role               @default(USER)
+  last_name                  String
+  first_name                 String
+  managed_policyholders      Policyholder[]     @relation("PolicyholderManager")
+  created_policyholders      Policyholder[]     @relation("PolicyholderCreator")
+  updated_policyholders      Policyholder[]     @relation("PolicyholderEditor")
   managed_business_providers BusinessProvider[] @relation("BusinessProviderManager")
   created_business_providers BusinessProvider[] @relation("BusinessProviderCreator")
   updated_business_providers BusinessProvider[] @relation("BusinessProviderEditor")
-  managed_project_contracts ProjectContract[] @relation("ProjectContractManager")
-  created_project_contracts ProjectContract[] @relation("ProjectContractCreator")
-  updated_project_contracts ProjectContract[] @relation("ProjectContractEditor")
-  created_damages           Damage[]          @relation("DamageCreator")
-  updated_damages           Damage[]          @relation("DamageEditor")
-  created_events            Event[]           @relation("EventCreator")
-  updated_events            Event[]           @relation("EventEditor")
-  created_payments          Payment[]         @relation("PaymentCreator")
-  updated_payments          Payment[]         @relation("PaymentEditor")
+  managed_project_contracts  ProjectContract[]  @relation("ProjectContractManager")
+  created_project_contracts  ProjectContract[]  @relation("ProjectContractCreator")
+  updated_project_contracts  ProjectContract[]  @relation("ProjectContractEditor")
+  created_damages            Damage[]           @relation("DamageCreator")
+  updated_damages            Damage[]           @relation("DamageEditor")
+  created_events             Event[]            @relation("EventCreator")
+  updated_events             Event[]            @relation("EventEditor")
+  created_payments           Payment[]          @relation("PaymentCreator")
+  updated_payments           Payment[]          @relation("PaymentEditor")
 }
 
 model Policyholder {
-  id                   String    @id @default(cuid())
+  id                   String            @id @default(cuid())
   company_name         String
   siret                String
   last_name            String
@@ -160,22 +160,22 @@ model Policyholder {
   zip_code             String
   town                 String
   notes                String
-  business_manager     User      @relation("PolicyholderManager", fields: [business_manager_id], references: [id])
+  business_manager     User              @relation("PolicyholderManager", fields: [business_manager_id], references: [id])
   business_manager_id  String
   business_provider    BusinessProvider? @relation(fields: [business_provider_id], references: [id])
   business_provider_id String?
-  creator              User      @relation("PolicyholderCreator", fields: [creator_id], references: [id])
+  creator              User              @relation("PolicyholderCreator", fields: [creator_id], references: [id])
   creator_id           String
-  created_at           DateTime  @default(now())
-  last_editor          User      @relation("PolicyholderEditor", fields: [last_editor_id], references: [id])
+  created_at           DateTime          @default(now())
+  last_editor          User              @relation("PolicyholderEditor", fields: [last_editor_id], references: [id])
   last_editor_id       String
-  updated_at           DateTime  @updatedAt
+  updated_at           DateTime          @updatedAt
   project_contracts    ProjectContract[]
   events               Event[]
 }
 
 model BusinessProvider {
-  id                  String    @id @default(cuid())
+  id                  String            @id @default(cuid())
   company_name        String
   last_name           String
   first_name          String
@@ -187,132 +187,132 @@ model BusinessProvider {
   zip_code            String
   Town                String
   notes               String
-  business_manager    User      @relation("BusinessProviderManager", fields: [business_manager_id], references: [id])
+  business_manager    User              @relation("BusinessProviderManager", fields: [business_manager_id], references: [id])
   business_manager_id String
-  creator             User      @relation("BusinessProviderCreator", fields: [creator_id], references: [id])
+  creator             User              @relation("BusinessProviderCreator", fields: [creator_id], references: [id])
   creator_id          String
-  created_at          DateTime  @default(now())
-  last_editor         User      @relation("BusinessProviderEditor", fields: [last_editor_id], references: [id])
+  created_at          DateTime          @default(now())
+  last_editor         User              @relation("BusinessProviderEditor", fields: [last_editor_id], references: [id])
   last_editor_id      String
-  updated_at          DateTime  @updatedAt
+  updated_at          DateTime          @updatedAt
   policyholders       Policyholder[]
   project_contracts   ProjectContract[]
 }
 
 model ProjectContract {
-  id                      String    @id @default(cuid())
-  product                 Product   @relation(fields: [product_id], references: [id])
-  product_id              String
-  state                   ProjectContractState @default(NEW)
-  last_editor             User      @relation("ProjectContractEditor", fields: [last_editor_id], references: [id])
-  last_editor_id          String
-  updated_at              DateTime  @updatedAt
-  to_be_recontacted_on    DateTime?
-  contract_origin         ContractOrigin
-  creator                 User      @relation("ProjectContractCreator", fields: [creator_id], references: [id])
-  creator_id              String
-  created_at              DateTime  @default(now())
-  manager                 User      @relation("ProjectContractManager", fields: [manager_id], references: [id])
-  manager_id              String
-  business_provider       BusinessProvider? @relation(fields: [business_provider_id], references: [id])
-  business_provider_id    String?
-  effective_from          DateTime?
+  id                       String               @id @default(cuid())
+  product                  Product              @relation(fields: [product_id], references: [id])
+  product_id               String
+  state                    ProjectContractState @default(NEW)
+  last_editor              User                 @relation("ProjectContractEditor", fields: [last_editor_id], references: [id])
+  last_editor_id           String
+  updated_at               DateTime             @updatedAt
+  to_be_recontacted_on     DateTime?
+  contract_origin          ContractOrigin
+  creator                  User                 @relation("ProjectContractCreator", fields: [creator_id], references: [id])
+  creator_id               String
+  created_at               DateTime             @default(now())
+  manager                  User                 @relation("ProjectContractManager", fields: [manager_id], references: [id])
+  manager_id               String
+  business_provider        BusinessProvider?    @relation(fields: [business_provider_id], references: [id])
+  business_provider_id     String?
+  effective_from           DateTime?
   contract_conversion_date DateTime?
-  closing_date            DateTime?
-  annual_bonus            Float?
-  annual_commission       Float?
-  fractioning             Fractioning?
-  partner                 Partner?  @relation(fields: [partner_id], references: [id])
-  partner_id              String?
-  collection_type         CollectionType?
-  policyholder            Policyholder @relation(fields: [policyholder_id], references: [id])
-  policyholder_id         String
-  events                  Event[]
-  damages                 Damage[]
-  due_dates               DueDate[]
+  closing_date             DateTime?
+  annual_bonus             Float?
+  annual_commission        Float?
+  fractioning              Fractioning?
+  partner                  Partner?             @relation(fields: [partner_id], references: [id])
+  partner_id               String?
+  collection_type          CollectionType?
+  policyholder             Policyholder         @relation(fields: [policyholder_id], references: [id])
+  policyholder_id          String
+  events                   Event[]
+  damages                  Damage[]
+  due_dates                DueDate[]
 }
 
 model Product {
-  id                 String @id @default(cuid())
-  name               String
-  project_contracts  ProjectContract[]
-  partners           Partner[]
+  id                String            @id @default(cuid())
+  name              String
+  project_contracts ProjectContract[]
+  partners          Partner[]
 }
 
 model Partner {
-  id                 String @id @default(cuid())
-  name               String
-  type               PartnerType @default(INSURER)
-  payment_type       PaymentType @default(NOT_ENTRUSTED)
-  notes              String
-  extranet           String
-  products           Product[]
-  project_contracts  ProjectContract[]
+  id                String            @id @default(cuid())
+  name              String
+  type              PartnerType       @default(INSURER)
+  payment_type      PaymentType       @default(NOT_ENTRUSTED)
+  notes             String
+  extranet          String
+  products          Product[]
+  project_contracts ProjectContract[]
 }
 
 model Damage {
-  id                   String @id @default(cuid())
-  title                String
-  type                 String
-  event_date           DateTime
-  notes                String
-  state                DamageState
-  creator              User   @relation("DamageCreator", fields: [creator_id], references: [id])
-  creator_id           String
-  created_at           DateTime @default(now())
-  last_editor          User   @relation("DamageEditor", fields: [last_editor_id], references: [id])
-  last_editor_id       String
-  updated_at           DateTime @updatedAt
-  project_contract     ProjectContract @relation(fields: [project_contract_id], references: [id])
-  project_contract_id  String
-  events               Event[]
+  id                  String          @id @default(cuid())
+  title               String
+  type                String
+  event_date          DateTime
+  notes               String
+  state               DamageState
+  creator             User            @relation("DamageCreator", fields: [creator_id], references: [id])
+  creator_id          String
+  created_at          DateTime        @default(now())
+  last_editor         User            @relation("DamageEditor", fields: [last_editor_id], references: [id])
+  last_editor_id      String
+  updated_at          DateTime        @updatedAt
+  project_contract    ProjectContract @relation(fields: [project_contract_id], references: [id])
+  project_contract_id String
+  events              Event[]
 }
 
 model Event {
-  id                   String @id @default(cuid())
-  title                String
-  notes                String
-  creator              User   @relation("EventCreator", fields: [creator_id], references: [id])
-  creator_id           String
-  created_at           DateTime @default(now())
-  last_editor          User   @relation("EventEditor", fields: [last_editor_id], references: [id])
-  last_editor_id       String
-  updated_at           DateTime @updatedAt
-  policyholder         Policyholder @relation(fields: [policyholder_id], references: [id])
-  policyholder_id      String
-  project_contract     ProjectContract? @relation(fields: [project_contract_id], references: [id])
-  project_contract_id  String?
-  damage               Damage? @relation(fields: [damage_id], references: [id])
-  damage_id            String?
+  id                  String           @id @default(cuid())
+  title               String
+  notes               String
+  creator             User             @relation("EventCreator", fields: [creator_id], references: [id])
+  creator_id          String
+  created_at          DateTime         @default(now())
+  last_editor         User             @relation("EventEditor", fields: [last_editor_id], references: [id])
+  last_editor_id      String
+  updated_at          DateTime         @updatedAt
+  policyholder        Policyholder     @relation(fields: [policyholder_id], references: [id])
+  policyholder_id     String
+  project_contract    ProjectContract? @relation(fields: [project_contract_id], references: [id])
+  project_contract_id String?
+  damage              Damage?          @relation(fields: [damage_id], references: [id])
+  damage_id           String?
 }
 
 model DueDate {
-  id                   String @id @default(cuid())
-  period_start         DateTime
-  period_end           DateTime
-  company_bonus_TTC    Float
-  commission           Float
-  administration_fee   Float
-  management_fee       Float
-  collection_type      CollectionType
-  amount_paid          Float
-  comment              String
-  project_contract     ProjectContract @relation(fields: [project_contract_id], references: [id])
-  project_contract_id  String
-  payments             Payment[]
+  id                  String          @id @default(cuid())
+  period_start        DateTime
+  period_end          DateTime
+  company_bonus_TTC   Float
+  commission          Float
+  administration_fee  Float
+  management_fee      Float
+  collection_type     CollectionType
+  amount_paid         Float
+  comment             String
+  project_contract    ProjectContract @relation(fields: [project_contract_id], references: [id])
+  project_contract_id String
+  payments            Payment[]
 }
 
 model Payment {
-  id                   String @id @default(cuid())
-  direction            PaymentDirection
-  payment_method       PaymentMethod
-  payment_date         DateTime
-  creator              User   @relation("PaymentCreator", fields: [creator_id], references: [id])
-  creator_id           String
-  created_at           DateTime @default(now())
-  last_editor          User   @relation("PaymentEditor", fields: [last_editor_id], references: [id])
-  last_editor_id       String
-  updated_at           DateTime @updatedAt
-  due_date             DueDate @relation(fields: [due_date_id], references: [id])
-  due_date_id          String
+  id             String           @id @default(cuid())
+  direction      PaymentDirection
+  payment_method PaymentMethod
+  payment_date   DateTime
+  creator        User             @relation("PaymentCreator", fields: [creator_id], references: [id])
+  creator_id     String
+  created_at     DateTime         @default(now())
+  last_editor    User             @relation("PaymentEditor", fields: [last_editor_id], references: [id])
+  last_editor_id String
+  updated_at     DateTime         @updatedAt
+  due_date       DueDate          @relation(fields: [due_date_id], references: [id])
+  due_date_id    String
 }
