@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/server/db';
-import { revalidatePath } from 'next/cache';
+import { revalidateTag } from 'next/cache';
 
 type CreatePolicyholderData = {
     last_name: string;
@@ -34,7 +34,7 @@ export async function createPolicyholder(data: CreatePolicyholderData) {
             },
         });
 
-        revalidatePath('/assure');
+        revalidateTag('policyholders');
         return newPolicyholder;
     } catch (error) {
         console.error('Error creating policyholder:', error);
