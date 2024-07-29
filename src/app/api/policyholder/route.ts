@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPolicyholders } from '@/actions/policyholder/read';
+import { getPolicyholders } from '../../../../services/policyholder/read';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;

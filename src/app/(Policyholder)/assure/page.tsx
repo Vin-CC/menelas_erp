@@ -1,12 +1,8 @@
-"use client"
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import SearchBar from './_components/search-bar';
 import PolicyholderTable from './_components/policyholder-table';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { getPolicyholders } from '@/actions/policyholder/read';
 
 interface PolicyholderResponse {
     data: any[];
@@ -21,23 +17,11 @@ interface PolicyholderResponse {
     };
 }
 
-export default function AssuresPage() {
+export default async function Policyholder() {
 
-    const searchParams = useSearchParams();
-    const search = searchParams.get('search') || '';
-    const last_seen_id = searchParams.get('last_seen_id') || '';
-    const limit = searchParams.get('limit') || '';
-    const [policyholders, setPolicyholders] = useState<PolicyholderResponse | null>(null);
-
-    useEffect(() => {
-        const getPolicyholders = async () => {
-            const policyholders = await fetch(`/api/policyholder?search=${search}&last_seen_id=${last_seen_id}&limit=${limit}`);
-            const data = await policyholders.json();
-            setPolicyholders(data);
-        }
-        getPolicyholders();
-    }
-        , [search, last_seen_id, limit]);
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL
+    const policyholders = await fetch(`${baseUrl}/api/policyholder`, { next: { tags: ['policyholder'] } });
+    const policyholdersData: PolicyholderResponse = await policyholders.json();
 
     return (
         <div>
@@ -48,7 +32,7 @@ export default function AssuresPage() {
                 </Button>
             </div>
             <Suspense fallback={<div>Chargement...</div>}>
-                {policyholders && <PolicyholderTable data={policyholders.data} meta={policyholders.meta} />}
+                <PolicyholderTable data={policyholdersData.data} meta={policyholdersData.meta} />
             </Suspense>
         </div>
     );

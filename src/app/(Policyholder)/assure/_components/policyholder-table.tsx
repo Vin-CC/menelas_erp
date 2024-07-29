@@ -3,6 +3,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { FileText, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Policyholder, User, BusinessProvider } from '@prisma/client';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 type PolicyholderWithRelations = Policyholder & {
     business_manager: User;
@@ -23,6 +29,7 @@ type PolicyholderTableProps = {
 };
 
 export default function PolicyholderTable({ data, meta }: PolicyholderTableProps) {
+
     return (
         <div>
             <Table>
@@ -37,7 +44,7 @@ export default function PolicyholderTable({ data, meta }: PolicyholderTableProps
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data.map((policyholder) => (
+                    {data?.map((policyholder) => (
                         <TableRow key={policyholder.id}>
                             <TableCell>{policyholder.id}</TableCell>
                             <TableCell>{`${policyholder.last_name} ${policyholder.first_name}`}</TableCell>
@@ -54,7 +61,16 @@ export default function PolicyholderTable({ data, meta }: PolicyholderTableProps
                                 )}
                             </TableCell>
                             <TableCell>
-                                {policyholder.notes && <FileText className="w-4 h-4" />}
+                                {policyholder.notes && <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger>
+                                            <FileText className="w-4 h-4" />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>{policyholder.notes}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>}
                             </TableCell>
                             <TableCell>
                                 <MoreHorizontal className="w-4 h-4" />
@@ -70,25 +86,25 @@ export default function PolicyholderTable({ data, meta }: PolicyholderTableProps
                         <option value="20">20</option>
                         <option value="50">50</option>
                     </select>
-                    <Button variant="outline" disabled={!meta.prev_page}>
-                        <Link href={meta.prev_page || '#'} className="flex items-center">
+                    <Button variant="outline" disabled={!meta?.prev_page}>
+                        <Link href={meta?.prev_page || '#'} className="flex items-center">
                             <ChevronLeft className="mr-2" /> Précédente
                         </Link>
                     </Button>
                     <div className="flex space-x-2">
-                        {[...Array(meta.max_page)].map((_, i) => (
+                        {[...Array(meta?.max_page)].map((_, i) => (
                             <Button
                                 key={i}
-                                variant={meta.current_page === i + 1 ? "default" : "outline"}
+                                variant={meta?.current_page === i + 1 ? "default" : "outline"}
                             >
-                                <Link href={`/api/policyholder?limit=${meta.limit}&last_seen_id=${i * meta.limit}`}>
+                                <Link href={`/api/policyholder?limit=${meta?.limit}&last_seen_id=${i * meta?.limit}`}>
                                     {i + 1}
                                 </Link>
                             </Button>
                         ))}
                     </div>
-                    <Button variant="outline" disabled={!meta.next_page}>
-                        <Link href={meta.next_page || '#'} className="flex items-center">
+                    <Button variant="outline" disabled={!meta?.next_page}>
+                        <Link href={meta?.next_page || '#'} className="flex items-center">
                             Suivante <ChevronRight className="ml-2" />
                         </Link>
                     </Button>

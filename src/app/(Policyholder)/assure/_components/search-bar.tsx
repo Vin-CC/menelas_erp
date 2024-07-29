@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { getPolicyholders } from '@/actions/policyholder/read';
 
 export default function SearchBar() {
     const router = useRouter();
@@ -15,7 +14,8 @@ export default function SearchBar() {
     useEffect(() => {
         const timer = setTimeout(async () => {
             if (search) {
-                const policyholders = await getPolicyholders({ search, limit: '5' });
+                const response = await fetch(`/api/policyholder?search=${search}&limit=5`);
+                const policyholders = await response.json();
                 setResults(policyholders.data);
             } else {
                 setResults([]);
@@ -24,6 +24,7 @@ export default function SearchBar() {
 
         return () => clearTimeout(timer);
     }, [search]);
+
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
