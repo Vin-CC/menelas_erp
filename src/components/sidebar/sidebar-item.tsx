@@ -10,15 +10,16 @@ interface SidebarItemProps {
     icon: string;
     label: string;
     href: string;
+    onClick?: () => void;
 }
 
-export function SidebarItem({ icon, label, href }: SidebarItemProps) {
+export function SidebarItem({ icon, label, href, onClick }: SidebarItemProps) {
     const pathname = usePathname();
     const isActive = pathname === href;
     const IconComponent = Icons[icon as keyof typeof Icons] as IconType || IconsRx[icon as keyof typeof IconsRx] as IconType || RiFileDamageLine as IconType
 
     return (
-        <Link href={href} className={`flex items-center px-4 py-2 rounded-md ${isActive ? 'bg-gray-200 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+        <Link href={href} onClick={onClick} className={`flex items-center px-4 py-2 rounded-md ${isActive ? 'bg-gray-200 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
             <IconComponent className={`mr-3 ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`} />
             <span className={isActive ? 'font-medium text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}>{label}</span>
         </Link>

@@ -2,8 +2,14 @@
 import { CustomModeToggle } from "../custom-mod-toggle";
 import { SidebarItem } from "./sidebar-item";
 import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+
 
 export function Sidebar() {
+    const { data: session, status } = useSession();
+    if (status === "loading") return <div className="h-screen flex justify-center items-center">Loading...</div>;
+    if (!session) return null;
+
     return (
         <aside className="w-64 bg-white dark:bg-gray-900 flex flex-col h-full border-r border-gray-200 dark:border-gray-700">
             <div className="flex justify-between items-center p-4">
@@ -26,7 +32,7 @@ export function Sidebar() {
                 <SidebarItem icon="FiBell" label="Evenements" href="/evenements" />
                 <SidebarItem icon="RiFileDamageLine" label="Sinistres" href="/sinistres" />
                 <div className="border-t border-gray-200 dark:border-gray-700">
-                    <SidebarItem icon='FiLogOut' label="Déconnexion" href="/logout" />
+                    <SidebarItem icon='FiLogOut' label="Déconnexion" href="" onClick={() => signOut({ callbackUrl: '/login' })} />
                 </div>
             </nav>
         </aside>

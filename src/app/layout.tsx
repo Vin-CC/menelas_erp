@@ -20,7 +20,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <div className="flex h-screen">
               <Sidebar />
-              <main className="flex-1 p-6 pl-8 overflow-auto bg-white dark:bg-gray-900">
+              <main className="flex-1 overflow-auto bg-white dark:bg-gray-900">
                 {children}
               </main>
             </div>
