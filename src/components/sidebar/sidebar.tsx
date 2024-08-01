@@ -17,7 +17,7 @@ export function Sidebar() {
                 Settings
             </Link>
             <nav className="flex-1 p-2 overflow-y-auto">
-                <SidebarItem icon="FiHome" label="Dashboard" href="/dashboard" />
+                <SidebarItem icon="FiHome" label="Dashboard" href="/" />
                 <SidebarItem icon="FiUser" label="Assurés" href="/assures" />
                 <SidebarItem icon="FiFile" label="Projets" href="/projets" />
                 <SidebarItem icon="FiFileText" label="Contrats" href="/contrats" />

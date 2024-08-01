@@ -18,7 +18,7 @@ export default function NotFound() {
                     {`Désolé, nous n'avons pas pu trouver la page que vous recherchez.`}
                 </p>
                 <div className="mt-10 flex justify-center">
-                    <Link href="/dashboard" className="text-sm font-semibold leading-7 text-white hover:text-gray-300 transition-colors">
+                    <Link href="/" className="text-sm font-semibold leading-7 text-white hover:text-gray-300 transition-colors">
                         <span aria-hidden="true">&larr;</span> {`Retour à la page d'accueil`}
                     </Link>
                 </div>
