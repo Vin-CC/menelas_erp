@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { SearchBar } from './_components/search-bar';
+import { SearchBar } from './_components/policyholder-search-bar';
 import { PolicyholderTable } from './_components/policyholder-table';
 
 interface PolicyholderResponse {
