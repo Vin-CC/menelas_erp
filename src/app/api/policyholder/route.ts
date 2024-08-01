@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPolicyholders } from '../../../../services/policyholder/read';
+import { currentUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
+    const user = await currentUser()
+
+    if (!user) {
+        return new Response("You must be logged in", {
+            status: 401,
+            headers: {
+                "content-type": "application/json",
+            },
+        });
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get('search') || undefined;
     const last_seen_id = searchParams.get('last_seen_id') || undefined;

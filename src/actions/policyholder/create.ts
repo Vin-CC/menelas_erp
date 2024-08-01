@@ -21,8 +21,8 @@ type CreatePolicyholderData = {
 export async function createPolicyholder(data: CreatePolicyholderData) {
     try {
 
-        const userId = "clyyndik50000ylastz9yliig"
-        const managerId = "clz1g0f6n0000fniqbr07y91z"
+        const userId = "clz9sspol0001p3hxt673m2va"
+        const managerId = "clz9sspol0001p3hxt673m2va"
 
         const newPolicyholder = await prisma.policyholder.create({
             data: {

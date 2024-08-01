@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { createPolicyholder } from '@/actions/policyholder/create';
 
-export default function AddPolicyholderForm() {
+export function AddPolicyholderForm() {
     const router = useRouter();
     const [formData, setFormData] = useState({
         last_name: '',

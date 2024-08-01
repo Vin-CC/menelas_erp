@@ -1,30 +1,47 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
-export default function SearchBar() {
+
+const debounce = (func: (...args: any) => any, delay: number) => {
+    let timerId: NodeJS.Timeout;
+    return (...args: any[]) => {
+        if (timerId) {
+            clearTimeout(timerId);
+        }
+        timerId = setTimeout(() => {
+            func(...args);
+        }, delay);
+    };
+};
+
+export function SearchBar() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [search, setSearch] = useState(searchParams.get('search') || '');
     const [results, setResults] = useState<any[]>([]);
 
+    const fetchResults = useCallback(async (searchTerm: string) => {
+        if (searchTerm) {
+            const response = await fetch(`/api/policyholder?search=${searchTerm}&limit=5`);
+            const policyholders = await response.json();
+            setResults(policyholders.data);
+        } else {
+            setResults([]);
+        }
+    }, []);
+
+    const debouncedFetchResults = useCallback(
+        debounce((searchTerm: string) => fetchResults(searchTerm), 500),
+        [fetchResults]
+    );
+
     useEffect(() => {
-        const timer = setTimeout(async () => {
-            if (search) {
-                const response = await fetch(`/api/policyholder?search=${search}&limit=5`);
-                const policyholders = await response.json();
-                setResults(policyholders.data);
-            } else {
-                setResults([]);
-            }
-        }, 300);
-
-        return () => clearTimeout(timer);
-    }, [search]);
-
+        debouncedFetchResults(search);
+    }, [search, debouncedFetchResults]);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);

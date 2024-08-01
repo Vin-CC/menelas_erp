@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import SearchBar from './_components/search-bar';
-import PolicyholderTable from './_components/policyholder-table';
+import { SearchBar } from './_components/search-bar';
+import { PolicyholderTable } from './_components/policyholder-table';
 
 interface PolicyholderResponse {
     data: any[];
@@ -17,7 +17,7 @@ interface PolicyholderResponse {
     };
 }
 
-export default async function Policyholder() {
+async function Policyholder() {
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL
     const policyholders = await fetch(`${baseUrl}/api/policyholder`, { next: { tags: ['policyholder'] } });
@@ -37,3 +37,6 @@ export default async function Policyholder() {
         </div>
     );
 }
+
+export default Policyholder
+

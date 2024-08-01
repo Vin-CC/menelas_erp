@@ -28,7 +28,7 @@ type PolicyholderTableProps = {
     };
 };
 
-export default function PolicyholderTable({ data, meta }: PolicyholderTableProps) {
+export function PolicyholderTable({ data, meta }: PolicyholderTableProps) {
 
     return (
         <div>
@@ -86,25 +86,25 @@ export default function PolicyholderTable({ data, meta }: PolicyholderTableProps
                         <option value="20">20</option>
                         <option value="50">50</option>
                     </select>
-                    <Button variant="outline" disabled={!meta?.prev_page}>
-                        <Link href={meta?.prev_page || '#'} className="flex items-center">
+                    <Button variant="outline" disabled={!meta.prev_page}>
+                        <Link href={meta.prev_page || '#'} className="flex items-center">
                             <ChevronLeft className="mr-2" /> Précédente
                         </Link>
                     </Button>
                     <div className="flex space-x-2">
-                        {[...Array(meta?.max_page)].map((_, i) => (
+                        {Array.from({ length: meta.max_page }, (_, i) => i + 1).map((pageNumber) => (
                             <Button
-                                key={i}
-                                variant={meta?.current_page === i + 1 ? "default" : "outline"}
+                                key={pageNumber}
+                                variant={meta.current_page === pageNumber ? "default" : "outline"}
                             >
-                                <Link href={`/api/policyholder?limit=${meta?.limit}&last_seen_id=${i * meta?.limit}`}>
-                                    {i + 1}
+                                <Link href={`/assure?limit=${meta.limit}&last_seen_id=${(pageNumber - 1) * meta.limit}`}>
+                                    {pageNumber}
                                 </Link>
                             </Button>
                         ))}
                     </div>
-                    <Button variant="outline" disabled={!meta?.next_page}>
-                        <Link href={meta?.next_page || '#'} className="flex items-center">
+                    <Button variant="outline" disabled={!meta.next_page}>
+                        <Link href={meta.next_page || '#'} className="flex items-center">
                             Suivante <ChevronRight className="ml-2" />
                         </Link>
                     </Button>

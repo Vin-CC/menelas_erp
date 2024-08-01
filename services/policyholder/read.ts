@@ -51,8 +51,8 @@ export async function getPolicyholders(params: {
         meta: {
             limit,
             last_seen_id: lastId,
-            next_page: hasNextPage ? `/assure?limit=${limit}&last_seen_id=${lastId}${search ? `&search=${search}` : ''}` : null,
-            prev_page: currentPage > 1 ? `/assure?limit=${limit}&last_seen_id=${Math.max(0, parseInt(last_seen_id || '0') - limit)}${search ? `&search=${search}` : ''}` : null,
+            next_page: hasNextPage ? `/api/policyholder?limit=${limit}&last_seen_id=${lastId}${search ? `&search=${search}` : ''}` : null,
+            prev_page: currentPage > 1 ? `/api/policyholder?limit=${limit}&last_seen_id=${Math.max(0, parseInt(last_seen_id || '0') - limit)}${search ? `&search=${search}` : ''}` : null,
             current_page: currentPage,
             max_page: maxPage,
             total,
