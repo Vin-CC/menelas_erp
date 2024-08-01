@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from '@/components/sidebar/sidebar';
 import { ThemeProvider } from "@/components/theme-provider";
 import Providers from "@/components/providers/provider";
 
@@ -19,7 +18,6 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
         <Providers>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <div className="flex h-screen">
-              <Sidebar />
               <main className="flex-1 overflow-auto bg-white dark:bg-gray-900">
                 {children}
               </main>

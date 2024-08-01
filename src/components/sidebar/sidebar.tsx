@@ -2,13 +2,10 @@
 import { CustomModeToggle } from "../custom-mod-toggle";
 import { SidebarItem } from "./sidebar-item";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 
 export function Sidebar() {
-    const { data: session, status } = useSession();
-    if (status === "loading") return <div className="h-screen flex justify-center items-center">Loading...</div>;
-    if (!session) return null;
 
     return (
         <aside className="w-64 bg-white dark:bg-gray-900 flex flex-col h-full border-r border-gray-200 dark:border-gray-700">
@@ -20,7 +17,7 @@ export function Sidebar() {
                 Settings
             </Link>
             <nav className="flex-1 p-2 overflow-y-auto">
-                <SidebarItem icon="FiHome" label="Dashboard" href="/" />
+                <SidebarItem icon="FiHome" label="Dashboard" href="/dashboard" />
                 <SidebarItem icon="FiUser" label="Assurés" href="/assures" />
                 <SidebarItem icon="FiFile" label="Projets" href="/projets" />
                 <SidebarItem icon="FiFileText" label="Contrats" href="/contrats" />
