@@ -1,4 +1,3 @@
-//app/Project()/_components/project-table.tsx
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -8,6 +7,7 @@ import { ProjectTableContent } from "./project-table-content"
 import { updateProjectState } from '@/actions/project/update'
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useSearchParams } from 'next/navigation'
 
 type ProjectWithRelations = {
     id: string;
@@ -42,7 +42,6 @@ type ProjectMeta = {
 type ProjectTableProps = {
     initialData: ProjectWithRelations[];
     initialMeta: ProjectMeta;
-    selectedSubscriber: string;
 };
 
 const stateLabels: Record<ProjectContractState, string> = {
@@ -57,19 +56,20 @@ const stateLabels: Record<ProjectContractState, string> = {
     WON: 'Gagné',
 };
 
-export const ProjectTable = ({ initialData, initialMeta, selectedSubscriber }: ProjectTableProps) => {
+const ALL_SUBSCRIBERS = 'ALL_SUBSCRIBERS';
+
+export const ProjectTable = ({ initialData, initialMeta }: ProjectTableProps) => {
     const [data, setData] = useState<ProjectWithRelations[]>(initialData);
     const [meta, setMeta] = useState<ProjectMeta>(initialMeta);
     const [selectedState, setSelectedState] = useState<ProjectContractState | 'ALL'>('ALL');
     const { toast } = useToast()
-
-    console.log(data)
-    console.log(meta)
+    const searchParams = useSearchParams()
+    const selectedSubscriber = searchParams.get('subscriber') || ALL_SUBSCRIBERS
 
     const fetchProjects = useCallback(async (state: ProjectContractState | 'ALL' = 'ALL', last_seen_id: string | null = null, perPage: number | null = null) => {
         const baseUrl = process.env.NEXT_PUBLIC_API_URL;
         const stateParam = state !== 'ALL' ? `&state=${state}` : '';
-        const subscriberParam = selectedSubscriber !== 'ALL' ? `&manager_id=${selectedSubscriber}` : '';
+        const subscriberParam = selectedSubscriber !== ALL_SUBSCRIBERS ? `&manager_id=${selectedSubscriber}` : '';
         const lastSeenParam = last_seen_id !== null ? `&last_seen_id=${last_seen_id}` : '';
         const perPageParam = perPage ? `&per_page=${perPage}` : '';
         const response = await fetch(
@@ -98,6 +98,7 @@ export const ProjectTable = ({ initialData, initialMeta, selectedSubscriber }: P
     useEffect(() => {
         fetchProjects(selectedState);
     }, [selectedState, selectedSubscriber, fetchProjects]);
+
 
     const handleStateChange = async (projectId: string, newState: ProjectContractState) => {
         const result = await updateProjectState(projectId, newState)
@@ -150,7 +151,7 @@ export const ProjectTable = ({ initialData, initialMeta, selectedSubscriber }: P
     return (
         <div className="space-y-4">
             <Tabs defaultValue="ALL" onValueChange={handleStateTabChange}>
-                <TabsList>
+                <TabsList className="flex justify-start space-x-2 overflow-x-auto">
                     <TabsTrigger key="ALL" value="ALL">
                         Tous <span className="ml-2 px-2 py-1 bg-secondary rounded-full text-xs">{meta.total}</span>
                     </TabsTrigger>

@@ -1,8 +1,7 @@
-//app/()Project()/_components/project_search-bar.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
@@ -18,24 +17,42 @@ interface ProjectResult {
     };
 }
 
+const debounce = (func: (...args: any) => any, delay: number) => {
+    let timerId: NodeJS.Timeout;
+    return (...args: any[]) => {
+        if (timerId) {
+            clearTimeout(timerId);
+        }
+        timerId = setTimeout(() => {
+            func(...args);
+        }, delay);
+    };
+};
+
 export default function ProjectSearchBar() {
     const router = useRouter();
-    const [search, setSearch] = useState('');
+    const searchParams = useSearchParams();
+    const [search, setSearch] = useState(searchParams.get('search') || '');
     const [results, setResults] = useState<ProjectResult[]>([]);
 
-    useEffect(() => {
-        const timer = setTimeout(async () => {
-            if (search) {
-                const response = await fetch(`/api/projects?search=${encodeURIComponent(search)}&limit=5`, { next: { tags: ['projects'] } });
-                const projects = await response.json();
-                setResults(projects.data);
-            } else {
-                setResults([]);
-            }
-        }, 300);
+    const fetchResults = useCallback(async (searchTerm: string) => {
+        if (searchTerm) {
+            const response = await fetch(`/api/projects?search=${encodeURIComponent(searchTerm)}&limit=5`, { next: { tags: ['projects'] } });
+            const projects = await response.json();
+            setResults(projects.data);
+        } else {
+            setResults([]);
+        }
+    }, []);
 
-        return () => clearTimeout(timer);
-    }, [search]);
+    const debouncedFetchResults = useCallback(
+        debounce((searchTerm: string) => fetchResults(searchTerm), 300),
+        [fetchResults]
+    );
+
+    useEffect(() => {
+        debouncedFetchResults(search);
+    }, [search, debouncedFetchResults]);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);

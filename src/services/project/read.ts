@@ -3,6 +3,7 @@
 import { prisma } from '@/server/db';
 import { ProjectContractState } from '@prisma/client';
 import { revalidateTag } from 'next/cache';
+import { Prisma } from '@prisma/client';
 
 type QueryParams = {
     search?: string;
@@ -13,7 +14,7 @@ type QueryParams = {
 };
 
 const buildWhereClause = (params: QueryParams) => {
-    const where: any = {};
+    const where: Prisma.ProjectContractWhereInput = {};
     if (params.search) {
         where.OR = [
             { product: { name: { contains: params.search, mode: 'insensitive' } } },
@@ -55,6 +56,9 @@ const getTotalByState = async (where: any) => {
 
 export async function getProjectContracts(params: QueryParams) {
     const limit = parseInt(params.limit || '10', 10);
+    if (params.state && !Object.values(ProjectContractState).includes(params.state)) {
+        throw new Error('État de projet invalide');
+    }
     const where = buildWhereClause(params);
 
     const [projectContracts, total, totalByState] = await Promise.all([
