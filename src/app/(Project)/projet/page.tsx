@@ -24,8 +24,8 @@ interface ProjectResponse {
 
 
 const souscripteursData = [
-    { id: 'clz9sspol0001p3hxt673m2va', last_name: 'Doe', first_name: 'John' },
-    { id: '2', last_name: 'Smith', first_name: 'Jane' },
+    { id: 'clz9sspol0001p3hxt673m2va', last_name: 'Coulibaly', first_name: 'Omar Almoctar' },
+    { id: 'clzcpmf9a0000d0x4vnpaxe0z', last_name: 'Cance', first_name: 'Vincent' },
     { id: '3', last_name: 'Brown', first_name: 'Bob' },
     { id: '4', last_name: 'Johnson', first_name: 'Alice' },
 ];

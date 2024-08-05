@@ -12,6 +12,7 @@ import { useSearchParams } from 'next/navigation'
 type ProjectWithRelations = {
     id: string;
     policyholder: {
+        id: string;
         last_name: string;
         first_name: string;
     };
@@ -19,7 +20,7 @@ type ProjectWithRelations = {
         name: string;
     };
     state: ProjectContractState;
-    last_action_date: string;
+    updated_at: string;
     to_be_recontacted_on: string | null;
     notes: string | null;
     manager: {
@@ -68,31 +69,37 @@ export const ProjectTable = ({ initialData, initialMeta }: ProjectTableProps) =>
 
     const fetchProjects = useCallback(async (state: ProjectContractState | 'ALL' = 'ALL', last_seen_id: string | null = null, perPage: number | null = null) => {
         const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-        const stateParam = state !== 'ALL' ? `&state=${state}` : '';
         const subscriberParam = selectedSubscriber !== ALL_SUBSCRIBERS ? `&manager_id=${selectedSubscriber}` : '';
         const lastSeenParam = last_seen_id !== null ? `&last_seen_id=${last_seen_id}` : '';
         const perPageParam = perPage ? `&per_page=${perPage}` : '';
+
+        // Toujours récupérer tous les projets(Je laisse les commentaires pour les parties faites grâce à l'IA)
         const response = await fetch(
-            `${baseUrl}/api/projects?${stateParam}${subscriberParam}${lastSeenParam}${perPageParam}`,
+            `${baseUrl}/api/projects?${subscriberParam}${lastSeenParam}${perPageParam}`,
             { next: { tags: ['projects'] }, }
         );
-        const newData = await response.json();
-        setData(newData.data);
-        // Ne mettez à jour que les données spécifiques à l'état actuel
+        const allProjectsData = await response.json();
+
+        // Calculer les totaux côté client
+        const totalByState = allProjectsData.data.reduce((acc: Record<ProjectContractState, number>, project: ProjectWithRelations) => {
+            acc[project.state] = (acc[project.state] || 0) + 1;
+            return acc;
+        }, {} as Record<ProjectContractState, number>);
+
+        const total = allProjectsData.data.length;
+
+        // Filtrer les données si un état spécifique est sélectionné
+        const filteredData = state === 'ALL' ? allProjectsData.data : allProjectsData.data.filter((p: ProjectWithRelations) => p.state === state);
+
+        setData(filteredData);
         setMeta(prevMeta => ({
             ...prevMeta,
-            total: state === 'ALL' ? newData.meta.total : prevMeta.total,
-            totalByState: {
-                ...prevMeta.totalByState,
-                [state]: newData.meta.total
-            },
-            limit: newData.meta.limit,
-            last_seen_id: newData.meta.last_seen_id,
-            next_page: newData.meta.next_page,
-            prev_page: newData.meta.prev_page,
-            current_page: newData.meta.current_page,
-            max_page: newData.meta.max_page,
+            ...allProjectsData.meta,
+            total,
+            totalByState,
         }));
+
+        return { data: filteredData, meta: { ...allProjectsData.meta, total, totalByState } };
     }, [selectedSubscriber]);
 
     useEffect(() => {
@@ -108,6 +115,7 @@ export const ProjectTable = ({ initialData, initialMeta }: ProjectTableProps) =>
                 title: "État mis à jour",
                 description: result.message,
             })
+
             // Mettre à jour les totaux localement
             setMeta(prevMeta => {
                 const oldState = data.find(p => p.id === projectId)?.state;
@@ -116,15 +124,16 @@ export const ProjectTable = ({ initialData, initialMeta }: ProjectTableProps) =>
                         ...prevMeta,
                         totalByState: {
                             ...prevMeta.totalByState,
-                            [oldState]: prevMeta.totalByState[oldState] - 1,
-                            [newState]: prevMeta.totalByState[newState] + 1
+                            [oldState]: (prevMeta.totalByState[oldState] || 0) - 1,
+                            [newState]: (prevMeta.totalByState[newState] || 0) + 1
                         }
                     }
                 }
                 return prevMeta;
             });
-            // Rafraîchir les données pour l'onglet actuel
-            await fetchProjects(selectedState)
+
+            // Rafraîchir les données
+            await fetchProjects(selectedState);
         } else {
             toast({
                 title: "Erreur",
@@ -143,9 +152,9 @@ export const ProjectTable = ({ initialData, initialMeta }: ProjectTableProps) =>
         fetchProjects(selectedState, last_seen_id);
     };
 
-    const handleStateTabChange = (value: string) => {
+    const handleStateTabChange = async (value: string) => {
         setSelectedState(value as ProjectContractState | 'ALL');
-        fetchProjects(value as ProjectContractState | 'ALL');
+        await fetchProjects(value as ProjectContractState | 'ALL');
     };
 
     return (
@@ -153,11 +162,15 @@ export const ProjectTable = ({ initialData, initialMeta }: ProjectTableProps) =>
             <Tabs defaultValue="ALL" onValueChange={handleStateTabChange}>
                 <TabsList className="flex justify-start space-x-2 overflow-x-auto">
                     <TabsTrigger key="ALL" value="ALL">
-                        Tous <span className="ml-2 px-2 py-1 bg-secondary rounded-full text-xs">{meta.total}</span>
+                        Tous <span className="ml-2 px-2 py-1 bg-secondary rounded-full text-xs">
+                            {Object.values(meta.totalByState).reduce((a, b) => a + b, 0)}
+                        </span>
                     </TabsTrigger>
                     {Object.entries(stateLabels).map(([state, label]) => (
                         <TabsTrigger key={state} value={state}>
-                            {label} <span className="ml-2 px-2 py-1 bg-secondary rounded-full text-xs">{meta.totalByState[state as ProjectContractState] || 0}</span>
+                            {label} <span className="ml-2 px-2 py-1 bg-secondary rounded-full text-xs">
+                                {meta.totalByState[state as ProjectContractState] || 0}
+                            </span>
                         </TabsTrigger>
                     ))}
                 </TabsList>

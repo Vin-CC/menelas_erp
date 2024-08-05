@@ -5,18 +5,22 @@ import { ProjectContractState } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import { FileText, Pencil } from "lucide-react"
 import Link from "next/link"
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { useRouter } from "next/navigation"
 
 type ProjectWithRelations = {
     id: string;
     policyholder: {
+        id: string;
         last_name: string;
         first_name: string;
     };
     product: {
         name: string;
     };
+    updated_at: string;
     state: ProjectContractState;
-    last_action_date: string;
     to_be_recontacted_on: string | null;
     notes: string | null;
     manager: {
@@ -36,6 +40,7 @@ const stateLabels: Record<ProjectContractState, string> = {
     WON: 'Gagné',
 };
 
+
 export const ProjectTableContent = ({
     data,
     handleStateChange
@@ -43,6 +48,15 @@ export const ProjectTableContent = ({
     data: ProjectWithRelations[],
     handleStateChange: (projectId: string, newState: ProjectContractState) => Promise<void>
 }) => {
+
+
+    const router = useRouter();
+
+    const handleRowClick = (policyholderId: string, projectId: string) => {
+        router.push(`/assure/${policyholderId}/projets/${projectId}`);
+    };
+
+
     return (
         <Table>
             <TableHeader>
@@ -59,7 +73,11 @@ export const ProjectTableContent = ({
             </TableHeader>
             <TableBody>
                 {data.map((project) => (
-                    <TableRow key={project.id}>
+                    <TableRow
+                        key={project.id}
+                        onClick={() => handleRowClick(project.policyholder.id, project.id)}
+                        className="cursor-pointer hover:bg-gray-100"
+                    >
                         <TableCell>
                             <Link href={`/user/${project.manager.id}/projets/${project.id}`}>
                                 {project.id}
@@ -81,8 +99,8 @@ export const ProjectTableContent = ({
                                 </SelectContent>
                             </Select>
                         </TableCell>
-                        <TableCell>{project.last_action_date}</TableCell>
-                        <TableCell>{project.to_be_recontacted_on}</TableCell>
+                        <TableCell>{format(new Date(project.updated_at), 'dd/MM/yyyy', { locale: fr })}</TableCell>
+                        <TableCell>{project.to_be_recontacted_on ? format(new Date(project.to_be_recontacted_on), 'dd/MM/yyyy', { locale: fr }) : ''}</TableCell>
                         <TableCell>
                             {project.notes && <FileText className="h-4 w-4" />}
                         </TableCell>
