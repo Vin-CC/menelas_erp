@@ -6,7 +6,7 @@ import EmailProvider from "next-auth/providers/nodemailer";
 
 export default {
     session: { strategy: "jwt" },
-    adapter: PrismaAdapter(prisma) as any,
+    adapter: PrismaAdapter(prisma),
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID ?? "",
