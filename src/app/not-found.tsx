@@ -8,8 +8,9 @@ export default function NotFound() {
                 alt="Fond abstrait représentant un champignon Mycena stylisé"
                 src="/404.avif"
                 className="absolute inset-0 -z-10 h-full w-full object-cover object-center"
-                layout="fill"
                 priority
+                width={400}
+                height={400}
             />
             <div className="mx-auto max-w-7xl px-6 py-32 text-center sm:py-40 lg:px-8">
                 <p className="text-base font-semibold leading-8 text-white">404</p>
