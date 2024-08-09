@@ -5,6 +5,8 @@ import { User } from "next-auth";
 export const currentUser = async (): Promise<(User & { id: string, role: Role }) | null> => {
     const session = await auth();
 
+    console.log("auth.ts session", session);
+
     if (!session || !session.user) {
         return null;
     }

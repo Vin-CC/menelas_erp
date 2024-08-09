@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SearchBar } from './_components/policyholder-search-bar';
 import { PolicyholderTable } from './_components/policyholder-table';
+import { auth } from '@/server/auth';
 
 interface PolicyholderResponse {
     data: any[];
@@ -18,10 +19,19 @@ interface PolicyholderResponse {
 }
 
 async function Policyholder() {
+    const session = await auth()
+
+    console.log("page session:", session);
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL
-    const policyholders = await fetch(`${baseUrl}/api/policyholder`, { next: { tags: ['policyholder'] } });
+    const policyholders = await fetch(`${baseUrl}/api/policyholder`, {
+        next: { tags: ['policyholder'] },
+        cache: "no-cache",
+        credentials: 'include',
+    });
     const policyholdersData: PolicyholderResponse = await policyholders.json();
+    console.log("policyholders", policyholdersData);
+
 
     return (
         <div>
