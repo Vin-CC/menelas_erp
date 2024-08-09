@@ -6,15 +6,22 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { verifyUserEmail } from "@/actions/user/read";
-import { clientLogin } from "@/actions/user/loginClient";
+import { emailLogin } from "@/actions/user/loginClient";
 import { FcGoogle } from "react-icons/fc";
+
+/**
+ * Corresponding to errors code in https://next-auth.js.org/configuration/pages
+ */
+const ErrorTranslation: Record<string, string> = {
+    "OAuthAccountNotLinked": "Il semble que l'adresse email associée à ce compte est déjà utilisée par un autre compte OAuth. Veuillez vous connecter avec le compte correspondant ou utiliser une autre méthode de connexion.",
+    "": "Une erreur a eu lieu, veuillez contacter votre service technique si celle ci se reproduit"
+}
 
 export function LoginForm({ error: initialError }: { error?: string }) {
     const [email, setEmail] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(initialError || "");
+    const [error, setError] = useState(initialError ? ErrorTranslation[initialError ?? ""] : "");
     const router = useRouter();
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,9 +33,11 @@ export function LoginForm({ error: initialError }: { error?: string }) {
                 setError(verifyResult.error);
                 return;
             }
-            const loginResult = await clientLogin(email);
+            const loginResult = await emailLogin(email);
+
             if (loginResult.error) {
                 setError(loginResult.error);
+                router.push("/login/erreur");
             } else if (loginResult.success) {
                 router.push(loginResult.callbackUrl);
             }
@@ -39,6 +48,7 @@ export function LoginForm({ error: initialError }: { error?: string }) {
             setIsLoading(false);
         }
     };
+
     const handleGoogleSignIn = async () => {
         setIsLoading(true);
         try {
@@ -49,6 +59,7 @@ export function LoginForm({ error: initialError }: { error?: string }) {
             setIsLoading(false);
         }
     };
+
     return (
         <div className="w-full max-w-md space-y-8">
             <div className="text-center">

@@ -1,13 +1,17 @@
 "use client";
+
 import { signIn } from "next-auth/react";
 
-export const clientLogin = async (email: string) => {
+export const emailLogin = async (email: string) => {
     try {
-        const result = await signIn("nodemailer", {
+        const result = await signIn("magiclink", {
             email,
-            redirect: false,
-            callbackUrl: "/login/error"
+            redirect: true,
+            callbackUrl: "/login/erreur"
         });
+        if (!result) {
+            return { error: "Error logging in" };
+        }
         if (result?.error) {
             return { error: result.error };
         }
