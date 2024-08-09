@@ -1,7 +1,7 @@
 import { DEFAULT_LOGIN_REDIRECTION, apiAuthPrefix, authRoutes, publicRoutes } from "@/routes"
 import authConfig from "@/auth.config"
-import { NextRequest } from "next/server"
 import NextAuth, { Session } from 'next-auth';
+import { NextRequest } from "next/server"
 
 export const { auth, signIn } = NextAuth(authConfig)
 
