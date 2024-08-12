@@ -1,117 +1,63 @@
-import * as React from "react"
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
+import React from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-import { cn } from "@/lib/utils"
-import { ButtonProps, buttonVariants } from "@/components/ui/button"
+export type PaginationMeta = {
+    limit: number;
+    last_seen_id: string;
+    next_page: string | null;
+    prev_page: string | null;
+    current_page: number;
+    max_page: number;
+    total: number;
+};
 
-const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
-  <nav
-    role="navigation"
-    aria-label="pagination"
-    className={cn("mx-auto flex w-full justify-center", className)}
-    {...props}
-  />
-)
-Pagination.displayName = "Pagination"
+type PaginationProps = {
+    meta: PaginationMeta;
+    basePath: string;
+    queryParams?: Record<string, string>;
+};
 
-const PaginationContent = React.forwardRef<
-  HTMLUListElement,
-  React.ComponentProps<"ul">
->(({ className, ...props }, ref) => (
-  <ul
-    ref={ref}
-    className={cn("flex flex-row items-center gap-1", className)}
-    {...props}
-  />
-))
-PaginationContent.displayName = "PaginationContent"
+export function Pagination({ meta, basePath, queryParams = {} }: PaginationProps) {
+    const getPageUrl = (pageNumber: number) => {
+        const params = new URLSearchParams(queryParams);
+        params.set('limit', meta.limit.toString());
+        params.set('last_seen_id', ((pageNumber - 1) * meta.limit).toString());
+        return `${basePath}?${params.toString()}`;
+    };
 
-const PaginationItem = React.forwardRef<
-  HTMLLIElement,
-  React.ComponentProps<"li">
->(({ className, ...props }, ref) => (
-  <li ref={ref} className={cn("", className)} {...props} />
-))
-PaginationItem.displayName = "PaginationItem"
-
-type PaginationLinkProps = {
-  isActive?: boolean
-} & Pick<ButtonProps, "size"> &
-  React.ComponentProps<"a">
-
-const PaginationLink = ({
-  className,
-  isActive,
-  size = "icon",
-  ...props
-}: PaginationLinkProps) => (
-  <a
-    aria-current={isActive ? "page" : undefined}
-    className={cn(
-      buttonVariants({
-        variant: isActive ? "outline" : "ghost",
-        size,
-      }),
-      className
-    )}
-    {...props}
-  />
-)
-PaginationLink.displayName = "PaginationLink"
-
-const PaginationPrevious = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to previous page"
-    size="default"
-    className={cn("gap-1 pl-2.5", className)}
-    {...props}
-  >
-    <ChevronLeft className="h-4 w-4" />
-    <span>Previous</span>
-  </PaginationLink>
-)
-PaginationPrevious.displayName = "PaginationPrevious"
-
-const PaginationNext = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to next page"
-    size="default"
-    className={cn("gap-1 pr-2.5", className)}
-    {...props}
-  >
-    <span>Next</span>
-    <ChevronRight className="h-4 w-4" />
-  </PaginationLink>
-)
-PaginationNext.displayName = "PaginationNext"
-
-const PaginationEllipsis = ({
-  className,
-  ...props
-}: React.ComponentProps<"span">) => (
-  <span
-    aria-hidden
-    className={cn("flex h-9 w-9 items-center justify-center", className)}
-    {...props}
-  >
-    <MoreHorizontal className="h-4 w-4" />
-    <span className="sr-only">More pages</span>
-  </span>
-)
-PaginationEllipsis.displayName = "PaginationEllipsis"
-
-export {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
+    return (
+        <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center space-x-2">
+                <select className="border rounded p-2">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+                <Button variant="outline" disabled={!meta.prev_page}>
+                    <Link href={meta.prev_page || '#'} className="flex items-center">
+                        <ChevronLeft className="mr-2" /> Précédente
+                    </Link>
+                </Button>
+                <div className="flex space-x-2">
+                    {Array.from({ length: meta.max_page }, (_, i) => i + 1).map((pageNumber) => (
+                        <Button
+                            key={pageNumber}
+                            variant={meta.current_page === pageNumber ? "default" : "outline"}
+                        >
+                            <Link href={getPageUrl(pageNumber)}>
+                                {pageNumber}
+                            </Link>
+                        </Button>
+                    ))}
+                </div>
+                <Button variant="outline" disabled={!meta.next_page}>
+                    <Link href={meta.next_page || '#'} className="flex items-center">
+                        Suivante <ChevronRight className="ml-2" />
+                    </Link>
+                </Button>
+            </div>
+        </div>
+    );
 }

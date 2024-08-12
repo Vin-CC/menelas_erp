@@ -28,7 +28,7 @@ async function Policyholder() {
             <div className="flex gap-32 items-center mb-4">
                 <SearchBar />
                 <Button asChild>
-                    <Link href="/assure/nouveau">Ajouter assuré</Link>
+                    <Link href="/assures/nouveau">Ajouter assuré</Link>
                 </Button>
             </div>
             <Suspense fallback={<div>Chargement...</div>}>

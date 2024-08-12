@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { FileText, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FileText, MoreHorizontal } from 'lucide-react';
 import { Policyholder, User, BusinessProvider } from '@prisma/client';
 import {
     Tooltip,
@@ -9,6 +8,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Pagination, PaginationMeta } from '@/components/ui/pagination';
 
 type PolicyholderWithRelations = Policyholder & {
     business_manager: User;
@@ -17,19 +17,10 @@ type PolicyholderWithRelations = Policyholder & {
 
 type PolicyholderTableProps = {
     data: PolicyholderWithRelations[];
-    meta: {
-        limit: number;
-        last_seen_id: string;
-        next_page: string | null;
-        prev_page: string | null;
-        current_page: number;
-        max_page: number;
-        total: number;
-    };
+    meta: PaginationMeta;
 };
 
 export function PolicyholderTable({ data, meta }: PolicyholderTableProps) {
-
     return (
         <div>
             <Table>
@@ -79,37 +70,7 @@ export function PolicyholderTable({ data, meta }: PolicyholderTableProps) {
                     ))}
                 </TableBody>
             </Table>
-            <div className="flex items-center justify-between mt-4">
-                <div className="flex items-center space-x-2">
-                    <select className="border rounded p-2">
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                    </select>
-                    <Button variant="outline" disabled={!meta.prev_page}>
-                        <Link href={meta.prev_page || '#'} className="flex items-center">
-                            <ChevronLeft className="mr-2" /> Précédente
-                        </Link>
-                    </Button>
-                    <div className="flex space-x-2">
-                        {Array.from({ length: meta.max_page }, (_, i) => i + 1).map((pageNumber) => (
-                            <Button
-                                key={pageNumber}
-                                variant={meta.current_page === pageNumber ? "default" : "outline"}
-                            >
-                                <Link href={`/assure?limit=${meta.limit}&last_seen_id=${(pageNumber - 1) * meta.limit}`}>
-                                    {pageNumber}
-                                </Link>
-                            </Button>
-                        ))}
-                    </div>
-                    <Button variant="outline" disabled={!meta.next_page}>
-                        <Link href={meta.next_page || '#'} className="flex items-center">
-                            Suivante <ChevronRight className="ml-2" />
-                        </Link>
-                    </Button>
-                </div>
-            </div>
+            <Pagination meta={meta} basePath="/assure" />
         </div>
     );
 }
