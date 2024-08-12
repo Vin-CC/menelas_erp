@@ -230,7 +230,6 @@ model ProjectContract {
   events                   Event[]
   damages                  Damage[]
   due_dates                DueDate[]
-  notes                    String
 }
 
 model Product {
