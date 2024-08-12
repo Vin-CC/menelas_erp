@@ -6,7 +6,7 @@ export const clientLogin = async (email: string) => {
         const result = await signIn("nodemailer", {
             email,
             redirect: false,
-            callbackUrl: "/login/verifier-mails"
+            callbackUrl: "/login/error"
         });
         if (result?.error) {
             return { error: result.error };
