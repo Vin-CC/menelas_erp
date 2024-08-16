@@ -1,9 +1,7 @@
 "use client"
-
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-
 export default function PolicyholderLayout({
     children,
 }: {
@@ -13,11 +11,11 @@ export default function PolicyholderLayout({
 
     const breadcrumbItems = [
         { label: 'Dashboard', href: '/' },
-        { label: 'Assurés', href: '/assure' },
+        { label: 'Assurés', href: '/assures' },
     ];
 
-    if (pathname === '/assure/nouveau') {
-        breadcrumbItems.push({ label: 'Nouveau', href: '/assure/nouveau' });
+    if (pathname === '/assures/nouveau') {
+        breadcrumbItems.push({ label: 'Nouveau', href: '/assures/nouveau' });
     }
 
     return (
@@ -29,7 +27,7 @@ export default function PolicyholderLayout({
                         <li key={item.href} className="inline-flex items-center">
                             {index > 0 && <ChevronRight className="w-4 h-4 text-gray-400 mx-1" />}
                             {index === breadcrumbItems.length - 1 ? (
-                                <span className="text-gray-500">{item.label}</span>
+                                <span>{item.label}</span>
                             ) : (
                                 <Link href={item.href} className="text-gray-700 hover:text-blue-600">
                                     {item.label}
