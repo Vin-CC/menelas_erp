@@ -22,18 +22,13 @@ interface ProjectResponse {
     };
 }
 
-
-const souscripteursData = [
-    { id: 'clz9sspol0001p3hxt673m2va', last_name: 'Coulibaly', first_name: 'Omar Almoctar' },
-    { id: 'clzcpmf9a0000d0x4vnpaxe0z', last_name: 'Cance', first_name: 'Vincent' },
-    { id: '3', last_name: 'Brown', first_name: 'Bob' },
-    { id: '4', last_name: 'Johnson', first_name: 'Alice' },
-];
-
 export default async function Project() {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL
     const response = await fetch(`${baseUrl}/api/projects`, { next: { tags: ['projects'] } });
     const projects: ProjectResponse = await response.json();
+
+    const responseSouscripteurs = await fetch(`${baseUrl}/api/subscribers`, { next: { tags: ['subscribers'] } });
+    const souscripteursData = await responseSouscripteurs.json();
 
     return (
         <div className="space-y-6 p-8">

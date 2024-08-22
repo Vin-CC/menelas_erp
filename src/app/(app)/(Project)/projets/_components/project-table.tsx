@@ -4,7 +4,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ProjectContractState } from "@prisma/client"
 import { useToast } from "@/components/ui/use-toast"
 import { ProjectTableContent } from "./project-table-content"
-import { updateProjectState } from '@/actions/project/update'
+import { updateProjectState } from '@/actions/project'
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useSearchParams } from 'next/navigation'
@@ -52,22 +52,21 @@ const stateLabels: Record<ProjectContractState, string> = {
     LOST: 'Perdu',
     WON: 'Gagné',
 };
-const ALL_SUBSCRIBERS = 'ALL_SUBSCRIBERS';
+
 export const ProjectTable = ({ initialData, initialMeta }: ProjectTableProps) => {
     const [data, setData] = useState<ProjectWithRelations[]>(initialData);
     const [meta, setMeta] = useState<ProjectMeta>(initialMeta);
     const [selectedState, setSelectedState] = useState<ProjectContractState | 'ALL'>('ALL');
-    const { toast } = useToast()
     const searchParams = useSearchParams()
-    const selectedSubscriber = searchParams.get('subscriber') || ALL_SUBSCRIBERS
+    const { toast } = useToast()
+    const selectedSubscriber = searchParams.get('subscriber')
 
     const fetchProjects = useCallback(async (state: ProjectContractState | 'ALL' = 'ALL', last_seen_id: string | null = null, perPage: number | null = null) => {
         const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-        const subscriberParam = selectedSubscriber !== ALL_SUBSCRIBERS ? `&manager_id=${selectedSubscriber}` : '';
+        const subscriberParam = selectedSubscriber ? `&manager_id=${selectedSubscriber}` : '';
         const lastSeenParam = last_seen_id !== null ? `&last_seen_id=${last_seen_id}` : '';
         const perPageParam = perPage ? `&per_page=${perPage}` : '';
 
-        // Toujours récupérer tous les projets(Je laisse les commentaires pour les parties faites grâce à l'IA)
         const response = await fetch(
             `${baseUrl}/api/projects?${subscriberParam}${lastSeenParam}${perPageParam}`,
             { next: { tags: ['projects'] }, }
@@ -99,6 +98,7 @@ export const ProjectTable = ({ initialData, initialMeta }: ProjectTableProps) =>
     useEffect(() => {
         fetchProjects(selectedState);
     }, [selectedState, selectedSubscriber, fetchProjects]);
+
     const handleStateChange = async (projectId: string, newState: ProjectContractState) => {
         const result = await updateProjectState(projectId, newState)
         if (result.success) {
@@ -136,6 +136,7 @@ export const ProjectTable = ({ initialData, initialMeta }: ProjectTableProps) =>
     const handlePerPageChange = (perPage: number) => {
         fetchProjects(selectedState, null, perPage);
     };
+
     const handlePageChange = (page: number) => {
         const last_seen_id = ((page - 1) * meta.limit).toString();
         fetchProjects(selectedState, last_seen_id);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getProjectContracts } from '../../../services/project';
+import { getProjectContracts } from '../../../services/projectService';
 import { ProjectContractState } from '@prisma/client';
 import { revalidateTag } from 'next/cache';
 import { currentUser } from "@/lib/auth";

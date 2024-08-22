@@ -7,20 +7,18 @@ type SouscripteurSelectProps = {
     souscripteursData: { id: string; last_name: string; first_name: string; }[];
 }
 
-const ALL_SUBSCRIBERS = 'ALL_SUBSCRIBERS';
-
 export const SouscripteurSelect = ({ souscripteursData }: SouscripteurSelectProps) => {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [selectedSubscriber, setSelectedSubscriber] = useState<string | undefined>(undefined)
+    const [selectedSubscriber, setSelectedSubscriber] = useState<string>('')
 
     useEffect(() => {
-        setSelectedSubscriber(searchParams.get('subscriber') || ALL_SUBSCRIBERS)
+        setSelectedSubscriber(searchParams.get('subscriber') || '')
     }, [searchParams])
 
     const handleChange = (value: string) => {
         const newSearchParams = new URLSearchParams(searchParams.toString())
-        if (value && value !== ALL_SUBSCRIBERS) {
+        if (value && value !== ' ') {
             newSearchParams.set('subscriber', value)
         } else {
             newSearchParams.delete('subscriber')
@@ -34,7 +32,7 @@ export const SouscripteurSelect = ({ souscripteursData }: SouscripteurSelectProp
                 <SelectValue placeholder="Sélectionner un souscripteur" />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value={ALL_SUBSCRIBERS}>Sélectionner un souscripteur</SelectItem>
+                <SelectItem value=" ">Sélectionner un souscripteur</SelectItem>
                 {souscripteursData.map((souscripteur) => (
                     <SelectItem key={souscripteur.id} value={souscripteur.id}>
                         {souscripteur.last_name} {souscripteur.first_name}

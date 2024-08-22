@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getProjectContracts } from '../../../../services/project';
+import { getProjectContracts } from '../../../../services/projectService';
 import { ProjectContractState } from '@prisma/client';
 import { stringify } from 'csv-stringify/sync';
 import { format } from 'date-fns';
@@ -19,16 +19,16 @@ const stateLabels: Record<ProjectContractState, string> = {
 };
 
 export async function GET(request: NextRequest) {
-    // const user = await currentUser();
+    const user = await currentUser();
 
-    // if (!user) {
-    //     return new Response("You must be logged in", {
-    //         status: 401,
-    //         headers: {
-    //             "content-type": "application/json",
-    //         },
-    //     });
-    // }
+    if (!user) {
+        return new Response("You must be logged in", {
+            status: 401,
+            headers: {
+                "content-type": "application/json",
+            },
+        });
+    }
 
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get('search') || undefined;

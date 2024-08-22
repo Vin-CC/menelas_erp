@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { verifyUserEmail } from "@/actions/user/read";
+import { verifyUserEmail } from "@/actions/user/user";
 import { emailLogin } from "@/actions/user/loginClient";
 import { FcGoogle } from "react-icons/fc";
 
