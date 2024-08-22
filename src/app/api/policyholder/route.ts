@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPolicyholders } from '../../../services/policyholder';
+import { searchPolicyholders } from '../../../services/policyholderService';
 import { currentUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     const last_seen_id = searchParams.get('last_seen_id') || undefined;
     const limit = searchParams.get('limit') || undefined;
     try {
-        const result = await getPolicyholders({ search, last_seen_id, limit });
+        const result = await searchPolicyholders({ search, last_seen_id, limit });
         return NextResponse.json(result);
     } catch (error) {
         console.error('Error fetching policyholders:', error);

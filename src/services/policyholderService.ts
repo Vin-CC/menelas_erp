@@ -4,13 +4,13 @@ import { prisma } from '@/server/db';
 import { revalidateTag } from 'next/cache';
 import { Prisma } from '@prisma/client';
 
-type GetPolicyholdersParams = {
+type SearchPolicyholdersParams = {
     search?: string;
     last_seen_id?: string;
     limit?: string;
 };
 
-export async function getPolicyholders({ search, last_seen_id, limit = '10' }: GetPolicyholdersParams) {
+export async function searchPolicyholders({ search, last_seen_id, limit = '10' }: SearchPolicyholdersParams) {
     const parsedLimit = parseInt(limit, 10);
 
     let where: Prisma.PolicyholderWhereInput = {};
@@ -29,7 +29,7 @@ export async function getPolicyholders({ search, last_seen_id, limit = '10' }: G
         const [policyholders, total] = await Promise.all([
             prisma.policyholder.findMany({
                 where,
-                take: parsedLimit + 1,
+                take: parsedLimit,
                 orderBy: { id: 'asc' },
                 include: {
                     business_manager: true,
@@ -39,9 +39,8 @@ export async function getPolicyholders({ search, last_seen_id, limit = '10' }: G
             prisma.policyholder.count({ where }),
         ]);
 
-        const hasNextPage = policyholders.length > parsedLimit;
-        const data = hasNextPage ? policyholders.slice(0, -1) : policyholders;
-        const lastId = data[data.length - 1]?.id;
+        const lastId = policyholders[policyholders.length - 1]?.id;
+        const hasNextPage = policyholders.length === parsedLimit;
 
         const currentPage = last_seen_id ? Math.floor(parseInt(last_seen_id) / parsedLimit) + 1 : 1;
         const maxPage = Math.ceil(total / parsedLimit);
@@ -49,7 +48,7 @@ export async function getPolicyholders({ search, last_seen_id, limit = '10' }: G
         revalidateTag('policyholders');
 
         return {
-            data,
+            data: policyholders,
             meta: {
                 limit: parsedLimit,
                 last_seen_id: lastId,

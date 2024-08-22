@@ -22,6 +22,7 @@ export function SearchBar() {
     const [search, setSearch] = useState(searchParams.get('search') || '');
     const [results, setResults] = useState<Policyholder[]>([]);
     const [isSearching, setIsSearching] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
     const debouncedFetchResults = useCallback((searchTerm: string) => {
@@ -44,6 +45,7 @@ export function SearchBar() {
             } catch (error) {
                 console.error('Error fetching results:', error);
                 setResults([]);
+                setError('Une erreur est survenue lors de la recherche. Veuillez réessayer.');
             } finally {
                 setIsSearching(false);
             }
@@ -81,6 +83,8 @@ export function SearchBar() {
                 <div className="absolute top-full left-0 right-0 bg-white shadow-md rounded-md mt-1 z-10 border border-gray-200">
                     {isSearching ? (
                         <div className="p-3 text-gray-600">Recherche en cours...</div>
+                    ) : error ? (
+                        <div className="p-3 text-red-600">{error}</div>
                     ) : results.length > 0 ? (
                         results.map((policyholder) => (
                             <div
