@@ -42,6 +42,14 @@ enum ContractOrigin {
   OTHER
 }
 
+enum ContractState {
+  IN_PROGRESS
+  IN_COLLECTION
+  SUSPENDED
+  TERMINATED
+}
+
+
 enum PartnerType {
   INSURER
   WHOLESALER
@@ -231,6 +239,9 @@ model ProjectContract {
   damages                  Damage[]
   due_dates                DueDate[]
   notes                    String
+  contract_state           ContractState?
+  contract_number          String? 
+  due_date                 Int?  
 }
 
 model Product {
