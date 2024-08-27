@@ -204,7 +204,7 @@ model BusinessProvider {
   last_editor_id      String
   updated_at          DateTime          @updatedAt
   policyholders       Policyholder[]
-  project_contracts   ProjectContract[]
+  project_contracts ProjectContract[] @relation("BusinessProviderToProjectContract")
 }
 
 model ProjectContract {
@@ -222,8 +222,8 @@ model ProjectContract {
   created_at               DateTime             @default(now())
   manager                  User                 @relation("ProjectContractManager", fields: [manager_id], references: [id])
   manager_id               String
-  business_provider        BusinessProvider?    @relation(fields: [business_provider_id], references: [id])
-  business_provider_id     String?
+  business_provider    BusinessProvider? @relation("BusinessProviderToProjectContract", fields: [business_provider_id], references: [id])
+  business_provider_id String?
   effective_from           DateTime?
   contract_conversion_date DateTime?
   closing_date             DateTime?
