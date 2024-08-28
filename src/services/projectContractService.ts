@@ -12,8 +12,10 @@ type QueryParams = {
     manager_id?: string;
 };
 
-const buildWhereClause = (params: QueryParams) => {
+export async function getProjectContracts(params: QueryParams) {
+    const limit = parseInt(params.limit || '10', 10);
     const where: Prisma.ProjectContractWhereInput = {};
+
     if (params.search) {
         where.OR = [
             { product: { name: { contains: params.search, mode: 'insensitive' } } },
@@ -31,12 +33,6 @@ const buildWhereClause = (params: QueryParams) => {
     if (params.contract_state) where.contract_state = params.contract_state;
     if (params.manager_id) where.manager_id = params.manager_id;
     if (params.last_seen_id) where.id = { gt: params.last_seen_id };
-    return where;
-};
-
-export async function getProjectContracts(params: QueryParams) {
-    const limit = parseInt(params.limit || '10', 10);
-    const where = buildWhereClause(params);
 
     const [projectContracts, total, totalByState] = await Promise.all([
         prisma.projectContract.findMany({

@@ -19,13 +19,29 @@ interface ContractResponse {
     };
 }
 
-export default async function Contract() {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL
-    const response = await fetch(`${baseUrl}/api/contracts`, { next: { tags: ['contracts'] } });
-    const contracts: ContractResponse = await response.json();
+interface SubscriberResponse {
+    id: string;
+    last_name: string;
+    first_name: string;
+}
 
-    const responseSouscripteurs = await fetch(`${baseUrl}/api/subscribers`, { next: { tags: ['subscribers'] } });
-    const souscripteursData = await responseSouscripteurs.json();
+async function getContracts(): Promise<ContractResponse> {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const res = await fetch(`${baseUrl}/api/contracts`, { next: { tags: ['contracts'] } });
+    return res.json();
+}
+
+async function getSubscribers(): Promise<SubscriberResponse[]> {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const res = await fetch(`${baseUrl}/api/subscribers`, { next: { tags: ['subscribers'] } });
+    return res.json();
+}
+
+export default async function Contract() {
+    const contractsPromise = getContracts();
+    const subscribersPromise = getSubscribers();
+
+    const [contracts, souscripteursData] = await Promise.all([contractsPromise, subscribersPromise]);
 
     return (
         <div className="space-y-6 p-8">
