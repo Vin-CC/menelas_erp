@@ -21,7 +21,7 @@ export function Sidebar() {
                 <SidebarItem icon="FiUser" label="Assurés" href="/assures" />
                 <SidebarItem icon="FiFile" label="Projets" href="/projets" />
                 <SidebarItem icon="FiFileText" label="Contrats" href="/contrats" />
-                <SidebarItem icon="FiUser" label="Apporteurs" href="/apporteurs" />
+                <SidebarItem icon="FiUser" label="Apporteurs" href="/charges-affaire" />
                 <SidebarItem icon="FiUser" label="Partenaires" href="/partenaires" />
                 <SidebarItem icon="FiFile" label="Produits" href="/produits" />
                 <SidebarItem icon="FiCalendar" label="Echéances" href="/echeances" />
