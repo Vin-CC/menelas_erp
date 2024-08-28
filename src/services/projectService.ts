@@ -12,7 +12,12 @@ type QueryParams = {
     manager_id?: string;
 };
 
-const buildWhereClause = (params: QueryParams) => {
+export async function getProjectContracts(params: QueryParams) {
+    const limit = parseInt(params.limit || '10', 10);
+    if (params.state && !Object.values(ProjectContractState).includes(params.state)) {
+        throw new Error('État de projet invalide');
+    }
+
     const where: Prisma.ProjectContractWhereInput = {};
     if (params.search) {
         where.OR = [
@@ -31,34 +36,6 @@ const buildWhereClause = (params: QueryParams) => {
     if (params.state) where.state = params.state;
     if (params.manager_id) where.manager_id = params.manager_id;
     if (params.last_seen_id) where.id = { gt: params.last_seen_id };
-    return where;
-};
-
-const getTotalByState = async (where: any) => {
-    const totalByState = await prisma.projectContract.groupBy({
-        by: ['state'],
-        _count: { _all: true },
-        where: { ...where, id: undefined }
-    });
-
-    const totalByStateObject = Object.values(ProjectContractState).reduce((acc, state) => {
-        acc[state] = 0;
-        return acc;
-    }, {} as Record<ProjectContractState, number>);
-
-    totalByState.forEach(({ state, _count }) => {
-        totalByStateObject[state] = _count._all;
-    });
-
-    return totalByStateObject;
-};
-
-export async function getProjectContracts(params: QueryParams) {
-    const limit = parseInt(params.limit || '10', 10);
-    if (params.state && !Object.values(ProjectContractState).includes(params.state)) {
-        throw new Error('État de projet invalide');
-    }
-    const where = buildWhereClause(params);
 
     const [projectContracts, total, totalByState] = await Promise.all([
         prisma.projectContract.findMany({
@@ -72,8 +49,17 @@ export async function getProjectContracts(params: QueryParams) {
             },
         }),
         prisma.projectContract.count({ where }),
-        getTotalByState(where)
+        prisma.projectContract.groupBy({
+            by: ['state'],
+            _count: { _all: true },
+            where: { ...where, id: undefined }
+        })
     ]);
+
+    const totalByStateObject = totalByState.reduce((acc, { state, _count }) => {
+        acc[state] = _count._all;
+        return acc;
+    }, Object.values(ProjectContractState).reduce((acc, state) => ({ ...acc, [state]: 0 }), {} as Record<ProjectContractState, number>));
 
     const hasNextPage = projectContracts.length > limit;
     const data = hasNextPage ? projectContracts.slice(0, -1) : projectContracts;
@@ -94,7 +80,7 @@ export async function getProjectContracts(params: QueryParams) {
             current_page: currentPage,
             max_page: maxPage,
             total,
-            totalByState,
+            totalByState: totalByStateObject,
         },
     };
 }

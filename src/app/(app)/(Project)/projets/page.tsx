@@ -6,29 +6,38 @@ import { ProjectTable } from './_components/project-table';
 import { ProjectContractState } from "@prisma/client"
 import { SouscripteurSelect } from './_components/souscripteur-select';
 import { ExportButton } from './_components/export-button';
+import { PaginationMeta } from '@/types/pagination';
 
 interface ProjectResponse {
     data: any[];
-    meta: {
-        total: number;
-        last_page: number;
-        per_page: number;
-        next_page: string | null;
-        prev_page: string | null;
-        current_page: number;
-        max_page: number;
-        limit: number;
+    meta: PaginationMeta & {
         totalByState: Record<ProjectContractState, number>;
     };
 }
 
-export default async function Project() {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL
-    const response = await fetch(`${baseUrl}/api/projects`, { next: { tags: ['projects'] } });
-    const projects: ProjectResponse = await response.json();
+interface SubscriberResponse {
+    id: string;
+    last_name: string;
+    first_name: string;
+}
 
-    const responseSouscripteurs = await fetch(`${baseUrl}/api/subscribers`, { next: { tags: ['subscribers'] } });
-    const souscripteursData = await responseSouscripteurs.json();
+async function getProjects(): Promise<ProjectResponse> {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const res = await fetch(`${baseUrl}/api/projects`, { next: { tags: ['projects'] } });
+    return res.json();
+}
+
+async function getSubscribers(): Promise<SubscriberResponse[]> {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const res = await fetch(`${baseUrl}/api/subscribers`, { next: { tags: ['subscribers'] } });
+    return res.json();
+}
+
+export default async function Project() {
+    const projectsData = getProjects();
+    const subscribersData = getSubscribers();
+
+    const [projects, souscripteursData] = await Promise.all([projectsData, subscribersData]);
 
     return (
         <div className="space-y-6 p-8">

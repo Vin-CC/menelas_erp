@@ -8,6 +8,8 @@ import { updateProjectState } from '@/actions/project'
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useSearchParams } from 'next/navigation'
+import { PaginationMeta } from '@/types/pagination';
+
 type ProjectWithRelations = {
     id: string;
     policyholder: {
@@ -26,17 +28,10 @@ type ProjectWithRelations = {
         id: string;
     };
 };
-type ProjectMeta = {
-    total: number;
-    last_page: number;
-    per_page: number;
-    next_page: string | null;
-    prev_page: string | null;
-    current_page: number;
-    max_page: number;
-    limit: number;
+type ProjectMeta = PaginationMeta & {
     totalByState: Record<ProjectContractState, number>;
 };
+
 type ProjectTableProps = {
     initialData: ProjectWithRelations[];
     initialMeta: ProjectMeta;

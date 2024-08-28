@@ -48,13 +48,7 @@ export const ProjectTableContent = ({
     handleStateChange: (projectId: string, newState: ProjectContractState) => Promise<void>
 }) => {
 
-
     const router = useRouter();
-
-    const handleRowClick = (policyholderId: string, projectId: string) => {
-        router.push(`/assure/${policyholderId}/projets/${projectId}`);
-    };
-
 
     return (
         <Table>
@@ -74,7 +68,9 @@ export const ProjectTableContent = ({
                 {data.map((project) => (
                     <TableRow
                         key={project.id}
-                        onClick={() => handleRowClick(project.policyholder.id, project.id)}
+                        onClick={() => {
+                            router.push(`/assure/${project.policyholder.id}/projets/${project.id}`);
+                        }}
                         className="cursor-pointer hover:bg-gray-100"
                     >
                         <TableCell>
