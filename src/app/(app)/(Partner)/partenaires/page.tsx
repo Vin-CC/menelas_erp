@@ -1,8 +1,9 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { SearchBar } from './_components/partner-search-bar';
+import { SearchBar } from '@/components/generic-searchbar';
 import { PartnerTable } from './_components/partner-table';
+import { PartnerType } from '@prisma/client';
 
 interface PartnerResponse {
     data: any[];
@@ -16,6 +17,12 @@ interface PartnerResponse {
         total: number;
     };
 }
+const typeLabels: Record<PartnerType, string> = {
+    INSURER: 'Assureur',
+    WHOLESALER: 'Grossiste',
+    AGENCY: 'Agence',
+};
+
 
 async function PartnerPage() {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -25,7 +32,12 @@ async function PartnerPage() {
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
-                <SearchBar />
+                <SearchBar
+                    placeholder="Chercher un partenaire"
+                    apiEndpoint="/api/partners"
+                    resultPath="/partenaires"
+                    typeLabels={typeLabels}
+                />
                 <Button asChild>
                     <Link href="/partenaires/nouveau">Ajouter partenaire</Link>
                 </Button>
