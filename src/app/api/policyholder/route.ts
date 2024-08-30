@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPolicyholders } from '../../../services/policyholder';
+import { getPolicyholders } from '../../../services/policyholderService';
 import { currentUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {

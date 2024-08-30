@@ -2,7 +2,7 @@
 
 import { prisma } from '@/server/db';
 import { Prisma, ContractState } from '@prisma/client';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 
 type QueryParams = {
     search?: string;
@@ -64,7 +64,7 @@ export async function getProjectContracts(params: QueryParams) {
         totalByState.map(({ contract_state, _count }) => [contract_state, _count])
     );
 
-    revalidateTag('contracts');
+    revalidatePath('/contrats')
 
     return {
         data: projectContracts,

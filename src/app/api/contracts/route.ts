@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProjectContracts } from '../../../services/projectContractService';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { currentUser } from "@/lib/auth";
 import { ContractState } from '@prisma/client';
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
             manager_id,
         });
 
-        revalidateTag('contracts');
+        revalidatePath('/contrats')
         return NextResponse.json(result);
     } catch (error) {
         console.error('Erreur lors de la récupération des contrats:', error);

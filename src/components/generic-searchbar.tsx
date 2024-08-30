@@ -15,7 +15,7 @@ type SearchBarProps = {
     placeholder: string;
     apiEndpoint: string;
     resultPath: string;
-    typeLabels: Record<string, string>;
+    typeLabels?: Record<string, string>;
 };
 
 export function SearchBar({ placeholder, apiEndpoint, resultPath, typeLabels }: SearchBarProps) {
@@ -44,7 +44,6 @@ export function SearchBar({ placeholder, apiEndpoint, resultPath, typeLabels }: 
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                console.log("Résultats de la recherche:", data);
                 setResults(data.data);
             } catch (error) {
                 console.error('Error fetching results:', error);
@@ -70,6 +69,7 @@ export function SearchBar({ placeholder, apiEndpoint, resultPath, typeLabels }: 
     const handleResultClick = (id: string) => {
         router.push(`${resultPath}/${id}`);
     };
+
 
     return (
         <div className="relative w-full max-w-md">
@@ -97,7 +97,7 @@ export function SearchBar({ placeholder, apiEndpoint, resultPath, typeLabels }: 
                                 onClick={() => handleResultClick(result.id)}
                             >
                                 <div className="font-semibold">{result.name}</div>
-                                {result.type && (
+                                {result.type && typeLabels && typeLabels[result.type] && (
                                     <div className="text-sm text-gray-600">{typeLabels[result.type]}</div>
                                 )}
                             </div>

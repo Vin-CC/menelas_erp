@@ -1,8 +1,9 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { SearchBar } from './_components/business-provider-search-bar';
+import { SearchBar } from '@/components/generic-searchbar';
 import { BusinessProviderTable } from './_components/business-provider-table';
+import { getBusinessProviders } from '../../../../services/businessProviderService';
 
 interface BusinessProviderResponse {
     data: any[];
@@ -18,14 +19,16 @@ interface BusinessProviderResponse {
 }
 
 async function BusinessProviderPage() {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-    const businessProviders = await fetch(`${baseUrl}/api/businessprovider`, { next: { tags: ['businessprovider'] } });
-    const businessProvidersData: BusinessProviderResponse = await businessProviders.json();
+    const businessProvidersData: BusinessProviderResponse = await getBusinessProviders({});
 
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
-                <SearchBar />
+                <SearchBar
+                    placeholder="Chercher un apporteur d'affaire"
+                    apiEndpoint="/api/businessprovider"
+                    resultPath="/apporteur-affaire"
+                />
                 <Button asChild>
                     <Link href="/charges-affaire/nouveau">{`Ajouter apporteur d'affaire`}</Link>
                 </Button>

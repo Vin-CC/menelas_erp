@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { createPolicyholder } from '@/actions/policyholder/create';
+import { createPolicyholder } from '@/actions/policyholder';
 
 export function AddPolicyholderForm() {
     const router = useRouter();

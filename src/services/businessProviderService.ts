@@ -1,8 +1,8 @@
 'use server'
 
 import { prisma } from '@/server/db';
-import { revalidateTag } from 'next/cache';
 import { Prisma } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
 
 type GetBusinessProvidersParams = {
     search?: string;
@@ -46,7 +46,8 @@ export async function getBusinessProviders({ search, last_seen_id, limit = '10' 
         const currentPage = last_seen_id ? Math.floor(parseInt(last_seen_id) / parsedLimit) + 1 : 1;
         const maxPage = Math.ceil(total / parsedLimit);
 
-        revalidateTag('businessproviders');
+        revalidatePath('/charges-affaire')
+
         return {
             data,
             meta: {

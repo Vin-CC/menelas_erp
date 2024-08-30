@@ -8,6 +8,7 @@ import { updateProjectState } from '@/actions/project'
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useSearchParams } from 'next/navigation'
+
 type ProjectWithRelations = {
     id: string;
     policyholder: {

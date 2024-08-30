@@ -1,8 +1,10 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { SearchBar } from './_components/policyholder-search-bar';
+import { SearchBar } from '@/components/generic-searchbar';
 import { PolicyholderTable } from './_components/policyholder-table';
+import { getPolicyholders } from '../../../../services/policyholderService';
+
 interface PolicyholderResponse {
     data: any[];
     meta: {
@@ -15,14 +17,18 @@ interface PolicyholderResponse {
         total: number;
     };
 }
+
 async function Policyholder() {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL
-    const policyholders = await fetch(`${baseUrl}/api/policyholder`, { next: { tags: ['policyholder'] } });
-    const policyholdersData: PolicyholderResponse = await policyholders.json();
+    const policyholdersData: PolicyholderResponse = await getPolicyholders({});
+
     return (
         <div>
             <div className="flex gap-32 items-center mb-4">
-                <SearchBar />
+                <SearchBar
+                    placeholder="Chercher un assuré"
+                    apiEndpoint="/api/policyholder"
+                    resultPath="/assure"
+                />
                 <Button asChild>
                     <Link href="/assures/nouveau">Ajouter assuré</Link>
                 </Button>
@@ -33,4 +39,5 @@ async function Policyholder() {
         </div>
     );
 }
-export default Policyholder
+
+export default Policyholder;

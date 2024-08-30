@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProjectContracts } from '../../../services/projectService';
 import { ProjectContractState } from '@prisma/client';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { currentUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
-    // const user = await currentUser()
+    const user = await currentUser()
 
-    // if (!user) {
-    //     return NextResponse.json(
-    //         { error: "You must be logged in" },
-    //         { status: 401 }
-    //     );
-    // }
+    if (!user) {
+        return NextResponse.json(
+            { error: "You must be logged in" },
+            { status: 401 }
+        );
+    }
 
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get('search') || undefined;
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
             manager_id,
         });
 
-        revalidateTag('projects');
+        revalidatePath('/projets')
         return NextResponse.json(result);
     } catch (error) {
         console.error('Erreur lors de la récupération des projets:', error);

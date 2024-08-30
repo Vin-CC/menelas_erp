@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { SearchBar } from '@/components/generic-searchbar';
 import { PartnerTable } from './_components/partner-table';
 import { PartnerType } from '@prisma/client';
+import { getPartners } from '../../../../services/partnerService';
 
 interface PartnerResponse {
     data: any[];
@@ -17,17 +18,15 @@ interface PartnerResponse {
         total: number;
     };
 }
+
 const typeLabels: Record<PartnerType, string> = {
     INSURER: 'Assureur',
     WHOLESALER: 'Grossiste',
     AGENCY: 'Agence',
 };
 
-
 async function PartnerPage() {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-    const partners = await fetch(`${baseUrl}/api/partners`, { next: { tags: ['partners'] } });
-    const partnersData: PartnerResponse = await partners.json();
+    const partnersData: PartnerResponse = await getPartners({});
 
     return (
         <div>
