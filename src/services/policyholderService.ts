@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/server/db';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { Prisma } from '@prisma/client';
 
 type GetPolicyholdersParams = {
@@ -46,7 +46,7 @@ export async function getPolicyholders({ search, last_seen_id, limit = '10' }: G
         const currentPage = last_seen_id ? Math.floor(parseInt(last_seen_id) / parsedLimit) + 1 : 1;
         const maxPage = Math.ceil(total / parsedLimit);
 
-        revalidateTag('policyholders');
+        revalidatePath('/assures')
 
         return {
             data,

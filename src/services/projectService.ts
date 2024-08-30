@@ -2,7 +2,7 @@
 
 import { prisma } from '@/server/db';
 import { ProjectContractState, Prisma } from '@prisma/client';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 
 type QueryParams = {
     search?: string;
@@ -82,7 +82,7 @@ export async function getProjectContracts(params: QueryParams) {
     const currentPage = params.last_seen_id ? Math.floor(parseInt(params.last_seen_id) / limit) + 1 : 1;
     const maxPage = Math.ceil(total / limit);
 
-    revalidateTag('projects');
+    revalidatePath('/projets')
 
     return {
         data,

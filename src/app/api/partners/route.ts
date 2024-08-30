@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPolicyholders } from '../../../services/policyholderService';
+import { getPartners } from '../../../services/partnerService';
 import { currentUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
@@ -16,11 +16,12 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || undefined;
     const last_seen_id = searchParams.get('last_seen_id') || undefined;
     const limit = searchParams.get('limit') || undefined;
+
     try {
-        const result = await getPolicyholders({ search, last_seen_id, limit });
+        const result = await getPartners({ search, last_seen_id, limit });
         return NextResponse.json(result);
     } catch (error) {
-        console.error('Error fetching policyholders:', error);
+        console.error('Error fetching partners:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

@@ -1,6 +1,6 @@
 "use server";
 import { prisma } from "@/server/db";
-import { revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 
 export const getUserByEmail = async (email: string) => {
     try {
@@ -36,7 +36,8 @@ export async function getSubscribers() {
             },
         })
 
-        revalidateTag('subscribers')
+        revalidatePath("/login")
+
         return subscribers
     } catch (error) {
         console.error('Erreur lors de la récupération des souscripteurs:', error)
